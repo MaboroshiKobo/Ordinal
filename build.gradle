@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '9.3.0'
+}
+
+group = 'org.maboroshi'
+version = '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        url = 'https://repo.extendedclip.com/releases/'
+    }
+}
+
+dependencies {
+    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    implementation("org.bstats:bstats-bukkit:3.1.0")
+    compileOnly("me.clip:placeholderapi:2.11.7")
+}
+
+tasks.named('shadowJar') {
+  relocate 'org.bstats', 'com.maboroshi.ordinal.libs.bstats'
+  exclude 'plugin.yml'
+  minimize()
+  archiveClassifier.set('')
+}
+
+build.dependsOn shadowJar
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('paper-plugin.yml') {
+        expand props
+    }
+}
