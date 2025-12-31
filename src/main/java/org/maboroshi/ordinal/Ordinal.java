@@ -5,6 +5,7 @@ import org.maboroshi.ordinal.config.ConfigManager;
 import org.maboroshi.ordinal.hook.OrdinalExpansion;
 import org.maboroshi.ordinal.listener.JoinListener;
 import org.maboroshi.ordinal.manager.OrdinalManager;
+import org.maboroshi.ordinal.util.UpdateChecker;
 import org.bstats.bukkit.Metrics;
 
 public final class Ordinal extends JavaPlugin {
@@ -24,6 +25,8 @@ public final class Ordinal extends JavaPlugin {
 
         @SuppressWarnings("unused")
         Metrics metrics = new Metrics(this, 28615);
+
+        new UpdateChecker(this).checkForUpdates();
     }
 
     public ConfigManager getConfigManager() {
