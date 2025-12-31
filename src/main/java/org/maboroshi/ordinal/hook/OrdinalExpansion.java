@@ -45,7 +45,7 @@ public class OrdinalExpansion extends PlaceholderExpansion {
             return "";
         }
 
-        if (params.equalsIgnoreCase("id")) {
+        if (params.equalsIgnoreCase("rank")) {
             int rank = ordinalManager.getOrdinal(player);
 
             if (rank == -1) {
