@@ -1,5 +1,5 @@
 name: Ordinal
-version: "1.0.0-SNAPSHOT"
+version: "1.0.0"
 main: org.maboroshi.ordinal.Ordinal
 description: Assigns persistent, sequential join IDs (Ordinal ranks) to players with PlaceholderAPI support.
 author: Maboroshi
