@@ -1,30 +1,31 @@
 package org.maboroshi.ordinal.config;
 
-import org.maboroshi.ordinal.Ordinal;
+import java.io.File;
+import org.maboroshi.ordinal.config.settings.MainConfig;
+import org.maboroshi.ordinal.config.settings.MainConfig.MainConfiguration;
+import org.maboroshi.ordinal.config.settings.MessageConfig;
+import org.maboroshi.ordinal.config.settings.MessageConfig.MessageConfiguration;
 
 public class ConfigManager {
-    private final Ordinal plugin;
+    private final File dataFolder;
 
-    public ConfigManager(Ordinal plugin) {
-        this.plugin = plugin;
-        plugin.saveDefaultConfig();
+    private MainConfiguration mainConfig;
+    private MessageConfiguration messageConfig;
+
+    public ConfigManager(File dataFolder) {
+        this.dataFolder = dataFolder;
     }
 
-    public int getNextOrdinal() {
-        return plugin.getConfig().getInt("registry.next-ordinal", 1);
-    }
-    
-    public void setNextOrdinal(int nextOrdinal) {
-        plugin.getConfig().set("registry.next-ordinal", nextOrdinal);
-        plugin.saveConfig();
+    public void load() {
+        this.mainConfig = MainConfig.load(dataFolder);
+        this.messageConfig = MessageConfig.load(dataFolder);
     }
 
-    public boolean isMigrationComplete() {
-        return plugin.getConfig().getBoolean("registry.migration-complete", false);
+    public MainConfiguration getMainConfig() {
+        return mainConfig;
     }
 
-    public void setMigrationComplete(boolean complete) {
-        plugin.getConfig().set("registry.migration-complete", complete);
-        plugin.saveConfig();
+    public MessageConfiguration getMessageConfig() {
+        return messageConfig;
     }
 }

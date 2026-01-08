@@ -17,12 +17,18 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if (plugin.getConfig().getBoolean("registry.force-reset", false)) {
+            if (event.getPlayer().getPersistentDataContainer().has(ordinalManager.getOrdinalRankKey(), org.bukkit.persistence.PersistentDataType.INTEGER)) {
+                event.getPlayer().getPersistentDataContainer().remove(ordinalManager.getOrdinalRankKey());
+                plugin.getLogger().info("Force reset triggered for " + event.getPlayer().getName() + ". Removing old rank.");
+            }
+        }
         if (ordinalManager.isMigrationInProgress()) {
             plugin.getLogger().info("Migration in progress. Delaying ordinal assignment for " + event.getPlayer().getName());
             return;
         }
         int currentOrdinal = ordinalManager.getOrdinal(event.getPlayer());
-        int legacyOrdinal = ordinalManager.checkExistingOrdinal(event.getPlayer().getUniqueId());
+        int legacyOrdinal = ordinalManager.checkExistingOrdinal(event.getPlayer());
         if (currentOrdinal == -1) {
             if (legacyOrdinal > 0) {
                 plugin.getLogger().info("Player " + event.getPlayer().getName() + " is a legacy player. Migrating to ordinal #" + legacyOrdinal);

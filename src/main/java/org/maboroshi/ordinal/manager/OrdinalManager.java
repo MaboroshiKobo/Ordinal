@@ -19,6 +19,7 @@ public class OrdinalManager {
     private final ConfigManager config;
     private final NamespacedKey ordinal_rank;
     private final HashMap<UUID, Integer> legacyCache = new HashMap<>();
+    private final HashMap<String, Integer> legacyNameCache = new HashMap<>();
     private boolean migrationInProgress;
 
     public OrdinalManager(Ordinal plugin) {
@@ -66,6 +67,9 @@ public class OrdinalManager {
         int index = 1;
         for (OfflinePlayer p : allPlayers) {
             legacyCache.put(p.getUniqueId(), index++);
+            if (p.getName() != null) {
+                legacyNameCache.put(p.getName().toLowerCase(), index - 1);
+            }
         }
         if (config.getNextOrdinal() < index) {
             config.setNextOrdinal(index);
@@ -75,7 +79,10 @@ public class OrdinalManager {
         migrationInProgress = false;
     }
 
-    public int checkExistingOrdinal(UUID uuid) {
-        return legacyCache.getOrDefault(uuid, -1);
+    public int checkExistingOrdinal(Player player) {
+        if (legacyCache.containsKey(player.getUniqueId())) {
+            return legacyCache.get(player.getUniqueId());
+        }
+        return legacyNameCache.getOrDefault(player.getName().toLowerCase(), -1);
     }
 }
