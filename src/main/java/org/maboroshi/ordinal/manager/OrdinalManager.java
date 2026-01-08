@@ -55,7 +55,7 @@ public class OrdinalManager {
         long start = System.currentTimeMillis();
 
         List<OfflinePlayer> allPlayers = Arrays.asList(Bukkit.getOfflinePlayers());
-        
+
         allPlayers.sort(Comparator.comparingLong(OfflinePlayer::getFirstPlayed));
 
         int index = 1;
