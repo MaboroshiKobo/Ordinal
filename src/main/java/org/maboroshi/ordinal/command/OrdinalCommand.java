@@ -6,6 +6,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
+import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.maboroshi.ordinal.Ordinal;
@@ -35,9 +36,7 @@ public class OrdinalCommand {
                             "<prefix>Plugin version: <green><version></green>",
                             messageUtils.tag("version", plugin.getPluginMeta().getVersion()));
 
-                    messageUtils.send(
-                            sender,
-                            "<green>🛈</green> <gray>Type <white>/ordinal reload</white> to reload the configuration.</gray>");
+                    messageUtils.send(sender, config.getMessageConfig().messages.helpInfo);
                     return Command.SINGLE_SUCCESS;
                 })
                 .then(Commands.literal("reload")
@@ -62,21 +61,21 @@ public class OrdinalCommand {
 
                                     PlayerSelectorArgumentResolver resolver =
                                             ctx.getArgument("target", PlayerSelectorArgumentResolver.class);
+                                    List<Player> targets = resolver.resolve(ctx.getSource());
 
-                                    Player target =
-                                            resolver.resolve(ctx.getSource()).getFirst();
-
-                                    if (target == null) {
-                                        messageUtils.send(sender, "<prefix> <red>Player not found.</red>");
+                                    if (targets.isEmpty()) {
+                                        messageUtils.send(sender, config.getMessageConfig().messages.playerNotFound);
                                         return 0;
                                     }
+
+                                    Player target = targets.get(0);
 
                                     plugin.getOrdinalManager().resetAndRecalculate(target);
 
                                     int newRank = plugin.getOrdinalManager().getOrdinal(target);
                                     messageUtils.send(
                                             sender,
-                                            "<prefix> <green>Reset complete for <white><player></white>. New Rank: <yellow><rank></yellow></green>",
+                                            config.getMessageConfig().messages.resetSuccess,
                                             messageUtils.tagParsed("player", target.getName()),
                                             messageUtils.tag("rank", newRank));
                                     return Command.SINGLE_SUCCESS;

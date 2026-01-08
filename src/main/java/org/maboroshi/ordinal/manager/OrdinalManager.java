@@ -12,10 +12,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.maboroshi.ordinal.Ordinal;
 import org.maboroshi.ordinal.config.ConfigManager;
+import org.maboroshi.ordinal.util.Logger;
 
 public class OrdinalManager {
     private final Ordinal plugin;
     private final ConfigManager config;
+    private final Logger log;
     private final NamespacedKey ordinal_rank;
     private final HashMap<UUID, Integer> legacyCache = new HashMap<>();
     private final HashMap<String, Integer> legacyNameCache = new HashMap<>();
@@ -23,27 +25,31 @@ public class OrdinalManager {
     public OrdinalManager(Ordinal plugin) {
         this.plugin = plugin;
         this.config = plugin.getConfigManager();
+        this.log = plugin.getPluginLogger();
         this.ordinal_rank = new NamespacedKey(plugin, "ordinal_rank");
         loadExistingPlayers();
     }
 
     public int getOrdinal(Player player) {
         if (!player.getPersistentDataContainer().has(ordinal_rank, PersistentDataType.INTEGER)) {
+            log.debug("Player " + player.getName() + " does not have an ordinal rank assigned");
             return -1;
         }
-        return player.getPersistentDataContainer().get(ordinal_rank, PersistentDataType.INTEGER);
+        int ordinal = player.getPersistentDataContainer().get(ordinal_rank, PersistentDataType.INTEGER);
+        log.debug("Retrieved ordinal #" + ordinal + " for player " + player.getName());
+        return ordinal;
     }
 
     public void assignOrdinal(Player player) {
         int nextOrdinal = config.ordinalData.nextOrdinal;
         player.getPersistentDataContainer().set(ordinal_rank, PersistentDataType.INTEGER, nextOrdinal);
         config.updateNextOrdinal(nextOrdinal + 1);
-        plugin.getLogger().info("Assigned Ordinal Rank #" + nextOrdinal + " to " + player.getName());
+        log.debug("Assigned Ordinal Rank #" + nextOrdinal + " to " + player.getName());
     }
 
     public void assignOrdinal(Player player, int providedOrdinal) {
         player.getPersistentDataContainer().set(ordinal_rank, PersistentDataType.INTEGER, providedOrdinal);
-        plugin.getLogger().info("Migrated " + player.getName() + " to Legacy Ordinal #" + providedOrdinal);
+        log.debug("Migrated " + player.getName() + " to Legacy Ordinal #" + providedOrdinal);
     }
 
     public NamespacedKey getOrdinalRankKey() {
@@ -51,10 +57,11 @@ public class OrdinalManager {
     }
 
     private void loadExistingPlayers() {
-        plugin.getLogger().info("Calculating join order for existing players...");
+        log.debug("Calculating join order for existing players...");
         long start = System.currentTimeMillis();
 
         List<OfflinePlayer> allPlayers = Arrays.asList(Bukkit.getOfflinePlayers());
+        log.debug("Found " + allPlayers.size() + " offline players to process");
 
         allPlayers.sort(Comparator.comparingLong(OfflinePlayer::getFirstPlayed));
 
@@ -67,18 +74,26 @@ public class OrdinalManager {
         }
 
         if (config.ordinalData.nextOrdinal < index) {
+            log.debug("Updating nextOrdinal from " + config.ordinalData.nextOrdinal + " to " + index);
             config.updateNextOrdinal(index);
+        } else {
+            log.debug("nextOrdinal already at " + config.ordinalData.nextOrdinal + ", no update needed");
         }
 
         long time = System.currentTimeMillis() - start;
-        plugin.getLogger().info("Calculation complete. Loaded " + (index - 1) + " players in " + time + "ms.");
+        log.debug("Calculation complete. Loaded " + (index - 1) + " players in " + time + "ms.");
     }
 
     public int checkExistingOrdinal(Player player) {
+        log.debug("Checking existing ordinal for " + player.getName() + " (UUID: " + player.getUniqueId() + ")");
         if (legacyCache.containsKey(player.getUniqueId())) {
-            return legacyCache.get(player.getUniqueId());
+            int ordinal = legacyCache.get(player.getUniqueId());
+            log.debug("Found ordinal #" + ordinal + " in UUID cache");
+            return ordinal;
         }
-        return legacyNameCache.getOrDefault(player.getName().toLowerCase(), -1);
+        int ordinal = legacyNameCache.getOrDefault(player.getName().toLowerCase(), -1);
+        log.debug("Found ordinal #" + ordinal + " in name cache (or -1 if not found)");
+        return ordinal;
     }
 
     public void resetAndRecalculate(Player player) {
@@ -87,6 +102,7 @@ public class OrdinalManager {
         }
 
         int legacyOrdinal = checkExistingOrdinal(player);
+        log.debug("Resetting and recalculating ordinal for " + player.getName() + ". Legacy ordinal: " + legacyOrdinal);
 
         if (legacyOrdinal > 0) {
             assignOrdinal(player, legacyOrdinal);

@@ -17,6 +17,9 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if (!plugin.getConfigManager().getMainConfig().seniority.enabled) {
+            return;
+        }
         int currentOrdinal = ordinalManager.getOrdinal(event.getPlayer());
         int legacyOrdinal = ordinalManager.checkExistingOrdinal(event.getPlayer());
         if (currentOrdinal == -1) {

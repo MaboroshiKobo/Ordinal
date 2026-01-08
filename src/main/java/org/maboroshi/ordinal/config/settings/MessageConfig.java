@@ -34,6 +34,17 @@ public final class MessageConfig {
         public String updateAvailable =
                 "<prefix> A new version is available! <gray>(Current: <red>{current_version}</red> | Latest: <green>{latest_version}</green>)</gray>";
 
+        @Comment("Message shown when using /ordinal command without arguments.")
+        public String helpInfo =
+                "<green>🛈</green> <gray>Type <white>/ordinal reload</white> to reload the configuration.</gray>";
+
+        @Comment("Message shown when a player is not found for the reset command.")
+        public String playerNotFound = "<prefix> <red>Player not found.</red>";
+
+        @Comment("Message shown when a player's ordinal is successfully reset.")
+        public String resetSuccess =
+                "<prefix> <green>Reset complete for <white><player></white>. New Rank: <yellow><rank></yellow></green>";
+
         public MessageSettings() {}
 
         public MessageSettings(String prefix, String reloadSuccess, String reloadFail, String updateAvailable) {
