@@ -1,6 +1,7 @@
 name: Ordinal
 version: "1.0.0"
 main: org.maboroshi.ordinal.Ordinal
+loader: org.maboroshi.ordinal.util.LibraryLoader
 description: Assign persistent, sequential join ranks to players and recognize your veteran community with PlaceholderAPI support.
 author: Maboroshi
 website: https://github.com/MaboroshiKobo/Ordinal

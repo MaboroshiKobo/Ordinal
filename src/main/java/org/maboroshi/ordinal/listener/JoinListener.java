@@ -17,22 +17,25 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (ordinalManager.isMigrationInProgress()) {
-            plugin.getLogger().info("Migration in progress. Delaying ordinal assignment for " + event.getPlayer().getName());
+        if (!plugin.getConfigManager().getMainConfig().seniority.enabled) {
             return;
         }
         int currentOrdinal = ordinalManager.getOrdinal(event.getPlayer());
-        int legacyOrdinal = ordinalManager.checkExistingOrdinal(event.getPlayer().getUniqueId());
+        int legacyOrdinal = ordinalManager.checkExistingOrdinal(event.getPlayer());
         if (currentOrdinal == -1) {
             if (legacyOrdinal > 0) {
-                plugin.getLogger().info("Player " + event.getPlayer().getName() + " is a legacy player. Migrating to ordinal #" + legacyOrdinal);
+                plugin.getLogger()
+                        .info("Player " + event.getPlayer().getName() + " is a legacy player. Migrating to ordinal #"
+                                + legacyOrdinal);
                 ordinalManager.assignOrdinal(event.getPlayer(), legacyOrdinal);
             } else {
-                plugin.getLogger().info("Player " + event.getPlayer().getName() + " is a new joiner. Assigning new ordinal.");
+                plugin.getLogger()
+                        .info("Player " + event.getPlayer().getName() + " is a new joiner. Assigning new ordinal.");
                 ordinalManager.assignOrdinal(event.getPlayer());
             }
         } else {
-            plugin.getLogger().info("Player " + event.getPlayer().getName() + " has rejoined with ordinal: " + currentOrdinal);
+            plugin.getLogger()
+                    .info("Player " + event.getPlayer().getName() + " has rejoined with ordinal: " + currentOrdinal);
         }
     }
 }

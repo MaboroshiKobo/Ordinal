@@ -1,11 +1,10 @@
 package org.maboroshi.ordinal.hook;
 
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.maboroshi.ordinal.Ordinal;
 import org.maboroshi.ordinal.manager.OrdinalManager;
-
-import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class OrdinalExpansion extends PlaceholderExpansion {
     private final Ordinal plugin;
@@ -17,20 +16,17 @@ public class OrdinalExpansion extends PlaceholderExpansion {
     }
 
     @Override
-    @NotNull
-    public String getAuthor() {
+    @NotNull public String getAuthor() {
         return String.join(", ", plugin.getPluginMeta().getAuthors());
     }
 
     @Override
-    @NotNull
-    public String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return "ordinal";
     }
 
     @Override
-    @NotNull
-    public String getVersion() {
+    @NotNull public String getVersion() {
         return plugin.getPluginMeta().getVersion();
     }
 

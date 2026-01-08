@@ -1,6 +1,7 @@
 plugins {
     id 'java'
-    id 'com.gradleup.shadow' version '9.3.0'
+    id 'com.gradleup.shadow' version '9.3.1'
+    id 'com.diffplug.spotless' version '8.1.0'
 }
 
 group = 'org.maboroshi'
@@ -19,12 +20,13 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    compileOnly("de.exlll:configlib-paper:4.8.0")
     implementation("org.bstats:bstats-bukkit:3.1.0")
     compileOnly("me.clip:placeholderapi:2.11.7")
 }
 
 tasks.named('shadowJar') {
-  relocate 'org.bstats', 'com.maboroshi.ordinal.libs.bstats'
+  relocate 'org.bstats', 'org.maboroshi.ordinal.libs.bstats'
   exclude 'plugin.yml'
   minimize()
   archiveClassifier.set('')
@@ -47,4 +49,22 @@ processResources {
     filesMatching('paper-plugin.yml') {
         expand props
     }
+}
+
+spotless {
+  format 'misc', {
+    target '*.gradle', '.gitattributes', '.gitignore'
+    trimTrailingWhitespace()
+    leadingTabsToSpaces()
+    endWithNewline()
+  }
+
+  java {
+    target 'src/*/java/**/*.java'
+    palantirJavaFormat('2.83.0')
+    formatAnnotations()
+    importOrder()
+    removeUnusedImports()
+    cleanthat()
+  }
 }

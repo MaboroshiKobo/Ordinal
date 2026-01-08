@@ -1,30 +1,60 @@
 package org.maboroshi.ordinal.config;
 
-import org.maboroshi.ordinal.Ordinal;
+import de.exlll.configlib.ConfigLib;
+import de.exlll.configlib.NameFormatters;
+import de.exlll.configlib.YamlConfigurationProperties;
+import de.exlll.configlib.YamlConfigurations;
+import java.io.File;
+import java.nio.file.Path;
+import org.maboroshi.ordinal.config.data.OrdinalData;
+import org.maboroshi.ordinal.config.settings.MainConfig;
+import org.maboroshi.ordinal.config.settings.MainConfig.MainConfiguration;
+import org.maboroshi.ordinal.config.settings.MessageConfig;
+import org.maboroshi.ordinal.config.settings.MessageConfig.MessageConfiguration;
 
 public class ConfigManager {
-    private final Ordinal plugin;
+    private final File dataFolder;
 
-    public ConfigManager(Ordinal plugin) {
-        this.plugin = plugin;
-        plugin.saveDefaultConfig();
+    private MainConfiguration mainConfig;
+    private MessageConfiguration messageConfig;
+
+    public OrdinalData ordinalData;
+
+    private Path dataPath;
+
+    public ConfigManager(File dataFolder) {
+        this.dataFolder = dataFolder;
     }
 
-    public int getNextOrdinal() {
-        return plugin.getConfig().getInt("registry.next-ordinal", 1);
-    }
-    
-    public void setNextOrdinal(int nextOrdinal) {
-        plugin.getConfig().set("registry.next-ordinal", nextOrdinal);
-        plugin.saveConfig();
+    public void load() {
+        this.mainConfig = MainConfig.load(dataFolder);
+        this.messageConfig = MessageConfig.load(dataFolder);
+
+        YamlConfigurationProperties properties = ConfigLib.BUKKIT_DEFAULT_PROPERTIES.toBuilder()
+                .setNameFormatter(NameFormatters.LOWER_KEBAB_CASE)
+                .build();
+        this.dataPath = new File(dataFolder, "data.yml").toPath();
+        this.ordinalData = YamlConfigurations.update(dataPath, OrdinalData.class, properties);
     }
 
-    public boolean isMigrationComplete() {
-        return plugin.getConfig().getBoolean("registry.migration-complete", false);
+    public void updateNextOrdinal(int newValue) {
+        this.ordinalData.nextOrdinal = newValue;
+        saveData();
     }
 
-    public void setMigrationComplete(boolean complete) {
-        plugin.getConfig().set("registry.migration-complete", complete);
-        plugin.saveConfig();
+    private void saveData() {
+        YamlConfigurations.save(dataPath, OrdinalData.class, ordinalData);
+    }
+
+    public MainConfiguration getMainConfig() {
+        return mainConfig;
+    }
+
+    public MessageConfiguration getMessageConfig() {
+        return messageConfig;
+    }
+
+    public OrdinalData getOrdinalData() {
+        return ordinalData;
     }
 }
