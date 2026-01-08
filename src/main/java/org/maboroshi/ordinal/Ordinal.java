@@ -49,9 +49,13 @@ public final class Ordinal extends JavaPlugin {
 
     public boolean reload() {
         try {
-            this.configManager = new ConfigManager(getDataFolder());
+            if (this.configManager == null) {
+                this.configManager = new ConfigManager(getDataFolder());
+            }
             this.configManager.load();
-            this.messageUtils = new MessageUtils(this.configManager);
+            if (this.messageUtils == null) {
+                this.messageUtils = new MessageUtils(this.configManager);
+            }
             return true;
         } catch (Exception e) {
             log.error("Failed to load configuration: " + e.getMessage());
