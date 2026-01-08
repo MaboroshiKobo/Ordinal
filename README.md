@@ -1,39 +1,33 @@
-# Ordinal
+**Ordinal** is a lightweight **utility plugin** created to assign persistent, **sequential join IDs** (Ordinal Ranks) to every player on your server!
 
-Ordinal is a plugin that assigns persistent, sequential join IDs (Ordinal ranks) to players with PlaceholderAPI support. The purpose of the plugin is to provide a lightweight, database-free way to track join order and recognize veteran players on your server.
+This plugin is ideal for servers wanting to have a **seniority system** to recognize long-time members, display distinct ranks in chat, or simply maintain an organized player database.
 
-## Server Compatibility
+### Features
 
-Ordinal is compatible with **Paper** and its forks. It is recommended to use Paper to run your server.
+**Ordinal** provides a modern approach to **seniority tracking** with these core capabilities:
+* **Sequential Seniority Ranks:** Assigns unique IDs (e.g., `#1`, `#67`) based on strict join order.
+* **Smart Migration:** automatically calculates and backfills **seniority** for existing players based on historical join dates.
+* **Native PlaceholderAPI support** to display **seniority ranks** in chat, tablists, and scoreboards using `%ordinal_rank%`.
+* **Fully configurable messages** using [MiniMessage](https://docs.papermc.io/adventure/minimessage/format) formatting.
 
-This plugin supports Minecraft versions **1.21** and newer running **Java 21**.
+### Documentation
 
-## Installation
+For a complete guide on features, commands, permissions, and configuration, please visit our [Wiki](https://docs.maboroshi.org/).
 
-1. Download the latest JAR file from the **Releases** page.
-2. Place the file into your server's `plugins` directory.
-3. Restart the server.
+### Support
 
-*Note: [PlaceholderAPI](https://placeholderapi.com/) is required for placeholders to work.*
+If you have questions, want to report a bug, or need help, please join our [Discord server](https://discord.maboroshi.org). Alternatively, you may open an issue on [GitHub](https://github.com/MaboroshiKobo/Ordinal/issues).
 
-## Placeholders and Permissions
+### Statistics
 
-| Feature | Usage / Node | Description |
-| :--- | :--- | :--- |
-| **Ordinal Rank** | `%ordinal_rank%` | Displays the player's unique join number (e.g., `67`). |
-| **Update Alerts** | `ordinal.admin` | Allows the player to receive notification messages when a new version is available. |
+This plugin utilizes [bStats](https://bstats.org/plugin/bukkit/Ordinal/28615) to collect anonymous usage metrics.
 
-## Configuration
+![bStats Metrics](https://bstats.org/signatures/bukkit/Ordinal.svg)
 
-This plugin uses a simple configuration system located in the `plugins/Ordinal/` directory.
+## Building
 
-* `config.yml`: General settings for the ID registry and migration status.
+```bash
+./gradlew build
+```
 
-## Building from Source
-
-To build this project locally, ensure you have **JDK 21** or newer installed.
-
-* On Linux or macOS: `./gradlew build`
-* On Windows: `gradlew build`
-
-The compiled artifact will be located in `build/libs/`.
+The compiled JAR will be in `build/libs/`.
