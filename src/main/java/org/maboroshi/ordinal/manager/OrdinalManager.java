@@ -19,7 +19,6 @@ public class OrdinalManager {
     private final NamespacedKey ordinal_rank;
     private final HashMap<UUID, Integer> legacyCache = new HashMap<>();
     private final HashMap<String, Integer> legacyNameCache = new HashMap<>();
-    private boolean migrationInProgress;
 
     public OrdinalManager(Ordinal plugin) {
         this.plugin = plugin;
@@ -37,11 +36,8 @@ public class OrdinalManager {
 
     public void assignOrdinal(Player player) {
         int nextOrdinal = config.ordinalData.nextOrdinal;
-
         player.getPersistentDataContainer().set(ordinal_rank, PersistentDataType.INTEGER, nextOrdinal);
-
         config.updateNextOrdinal(nextOrdinal + 1);
-
         plugin.getLogger().info("Assigned Ordinal Rank #" + nextOrdinal + " to " + player.getName());
     }
 
@@ -54,18 +50,14 @@ public class OrdinalManager {
         return ordinal_rank;
     }
 
-    public boolean isMigrationInProgress() {
-        return migrationInProgress;
-    }
-
     private void loadExistingPlayers() {
-        if (config.ordinalData.migrationComplete) {
-            return;
-        }
-        migrationInProgress = true;
         plugin.getLogger().info("Calculating join order for existing players...");
+        long start = System.currentTimeMillis();
+
         List<OfflinePlayer> allPlayers = Arrays.asList(Bukkit.getOfflinePlayers());
+        
         allPlayers.sort(Comparator.comparingLong(OfflinePlayer::getFirstPlayed));
+
         int index = 1;
         for (OfflinePlayer p : allPlayers) {
             legacyCache.put(p.getUniqueId(), index++);
@@ -78,11 +70,8 @@ public class OrdinalManager {
             config.updateNextOrdinal(index);
         }
 
-        plugin.getLogger().info("Calculation complete. Found " + (index - 1) + " existing players.");
-
-        config.setMigrationComplete(true);
-
-        migrationInProgress = false;
+        long time = System.currentTimeMillis() - start;
+        plugin.getLogger().info("Calculation complete. Loaded " + (index - 1) + " players in " + time + "ms.");
     }
 
     public int checkExistingOrdinal(Player player) {

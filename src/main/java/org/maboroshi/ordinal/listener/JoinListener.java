@@ -17,12 +17,6 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (ordinalManager.isMigrationInProgress()) {
-            plugin.getLogger()
-                    .info("Migration in progress. Delaying ordinal assignment for "
-                            + event.getPlayer().getName());
-            return;
-        }
         int currentOrdinal = ordinalManager.getOrdinal(event.getPlayer());
         int legacyOrdinal = ordinalManager.checkExistingOrdinal(event.getPlayer());
         if (currentOrdinal == -1) {

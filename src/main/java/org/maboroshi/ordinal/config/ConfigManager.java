@@ -42,11 +42,6 @@ public class ConfigManager {
         saveData();
     }
 
-    public void setMigrationComplete(boolean complete) {
-        this.ordinalData.migrationComplete = complete;
-        saveData();
-    }
-
     private void saveData() {
         YamlConfigurations.save(dataPath, OrdinalData.class, ordinalData);
     }
