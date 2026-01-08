@@ -4,7 +4,10 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.maboroshi.ordinal.Ordinal;
 import org.maboroshi.ordinal.config.ConfigManager;
 import org.maboroshi.ordinal.util.Logger;
@@ -43,13 +46,41 @@ public class OrdinalCommand {
                             CommandSender sender = ctx.getSource().getSender();
                             if (plugin.reload()) {
                                 log.info("Configuration reloaded by " + sender.getName());
-                                messageUtils.send(sender, "<prefix>" + config.getMessageConfig().messages.reloadSuccess);
+                                messageUtils.send(
+                                        sender, "<prefix>" + config.getMessageConfig().messages.reloadSuccess);
                             } else {
                                 log.warn("Failed to reload configuration by " + sender.getName());
                                 messageUtils.send(sender, "<prefix>" + config.getMessageConfig().messages.reloadFail);
                             }
                             return Command.SINGLE_SUCCESS;
                         }))
+                .then(Commands.literal("reset")
+                        .requires(ctx -> ctx.getSender().hasPermission("ordinal.admin"))
+                        .then(Commands.argument("target", ArgumentTypes.player())
+                                .executes(ctx -> {
+                                    CommandSender sender = ctx.getSource().getSender();
+
+                                    PlayerSelectorArgumentResolver resolver =
+                                            ctx.getArgument("target", PlayerSelectorArgumentResolver.class);
+
+                                    Player target =
+                                            resolver.resolve(ctx.getSource()).getFirst();
+
+                                    if (target == null) {
+                                        messageUtils.send(sender, "<prefix> <red>Player not found.</red>");
+                                        return 0;
+                                    }
+
+                                    plugin.getOrdinalManager().resetAndRecalculate(target);
+
+                                    int newRank = plugin.getOrdinalManager().getOrdinal(target);
+                                    messageUtils.send(
+                                            sender,
+                                            "<prefix> <green>Reset complete for <white><player></white>. New Rank: <yellow><rank></yellow></green>",
+                                            messageUtils.tagParsed("player", target.getName()),
+                                            messageUtils.tag("rank", newRank));
+                                    return Command.SINGLE_SUCCESS;
+                                })))
                 .build();
     }
 }

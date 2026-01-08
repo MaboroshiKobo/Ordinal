@@ -1,6 +1,12 @@
 package org.maboroshi.ordinal.config;
 
+import de.exlll.configlib.ConfigLib;
+import de.exlll.configlib.NameFormatters;
+import de.exlll.configlib.YamlConfigurationProperties;
+import de.exlll.configlib.YamlConfigurations;
 import java.io.File;
+import java.nio.file.Path;
+import org.maboroshi.ordinal.config.data.OrdinalData;
 import org.maboroshi.ordinal.config.settings.MainConfig;
 import org.maboroshi.ordinal.config.settings.MainConfig.MainConfiguration;
 import org.maboroshi.ordinal.config.settings.MessageConfig;
@@ -12,6 +18,10 @@ public class ConfigManager {
     private MainConfiguration mainConfig;
     private MessageConfiguration messageConfig;
 
+    public OrdinalData ordinalData;
+
+    private Path dataPath;
+
     public ConfigManager(File dataFolder) {
         this.dataFolder = dataFolder;
     }
@@ -19,6 +29,26 @@ public class ConfigManager {
     public void load() {
         this.mainConfig = MainConfig.load(dataFolder);
         this.messageConfig = MessageConfig.load(dataFolder);
+
+        YamlConfigurationProperties properties = ConfigLib.BUKKIT_DEFAULT_PROPERTIES.toBuilder()
+                .setNameFormatter(NameFormatters.LOWER_KEBAB_CASE)
+                .build();
+        this.dataPath = new File(dataFolder, "data.yml").toPath();
+        this.ordinalData = YamlConfigurations.update(dataPath, OrdinalData.class, properties);
+    }
+
+    public void updateNextOrdinal(int newValue) {
+        this.ordinalData.nextOrdinal = newValue;
+        saveData();
+    }
+
+    public void setMigrationComplete(boolean complete) {
+        this.ordinalData.migrationComplete = complete;
+        saveData();
+    }
+
+    private void saveData() {
+        YamlConfigurations.save(dataPath, OrdinalData.class, ordinalData);
     }
 
     public MainConfiguration getMainConfig() {
@@ -27,5 +57,9 @@ public class ConfigManager {
 
     public MessageConfiguration getMessageConfig() {
         return messageConfig;
+    }
+
+    public OrdinalData getOrdinalData() {
+        return ordinalData;
     }
 }

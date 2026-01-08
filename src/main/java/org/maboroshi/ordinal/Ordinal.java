@@ -1,5 +1,7 @@
 package org.maboroshi.ordinal;
 
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.maboroshi.ordinal.command.OrdinalCommand;
 import org.maboroshi.ordinal.config.ConfigManager;
@@ -9,10 +11,6 @@ import org.maboroshi.ordinal.manager.OrdinalManager;
 import org.maboroshi.ordinal.util.Logger;
 import org.maboroshi.ordinal.util.MessageUtils;
 import org.maboroshi.ordinal.util.UpdateChecker;
-
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-
-import org.bstats.bukkit.Metrics;
 
 public final class Ordinal extends JavaPlugin {
     private static Ordinal plugin;

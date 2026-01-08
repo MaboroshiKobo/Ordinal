@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
@@ -37,9 +36,12 @@ public class OrdinalManager {
     }
 
     public void assignOrdinal(Player player) {
-        int nextOrdinal = config.getNextOrdinal();
+        int nextOrdinal = config.ordinalData.nextOrdinal;
+
         player.getPersistentDataContainer().set(ordinal_rank, PersistentDataType.INTEGER, nextOrdinal);
-        config.setNextOrdinal(nextOrdinal + 1);
+
+        config.updateNextOrdinal(nextOrdinal + 1);
+
         plugin.getLogger().info("Assigned Ordinal Rank #" + nextOrdinal + " to " + player.getName());
     }
 
@@ -57,7 +59,7 @@ public class OrdinalManager {
     }
 
     private void loadExistingPlayers() {
-        if (config.isMigrationComplete()) {
+        if (config.ordinalData.migrationComplete) {
             return;
         }
         migrationInProgress = true;
@@ -71,11 +73,15 @@ public class OrdinalManager {
                 legacyNameCache.put(p.getName().toLowerCase(), index - 1);
             }
         }
-        if (config.getNextOrdinal() < index) {
-            config.setNextOrdinal(index);
+
+        if (config.ordinalData.nextOrdinal < index) {
+            config.updateNextOrdinal(index);
         }
+
         plugin.getLogger().info("Calculation complete. Found " + (index - 1) + " existing players.");
+
         config.setMigrationComplete(true);
+
         migrationInProgress = false;
     }
 
@@ -84,5 +90,19 @@ public class OrdinalManager {
             return legacyCache.get(player.getUniqueId());
         }
         return legacyNameCache.getOrDefault(player.getName().toLowerCase(), -1);
+    }
+
+    public void resetAndRecalculate(Player player) {
+        if (player.getPersistentDataContainer().has(ordinal_rank, PersistentDataType.INTEGER)) {
+            player.getPersistentDataContainer().remove(ordinal_rank);
+        }
+
+        int legacyOrdinal = checkExistingOrdinal(player);
+
+        if (legacyOrdinal > 0) {
+            assignOrdinal(player, legacyOrdinal);
+        } else {
+            assignOrdinal(player);
+        }
     }
 }
