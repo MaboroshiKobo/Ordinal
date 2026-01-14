@@ -1,22 +1,34 @@
-**Ordinal** is a lightweight **utility plugin** created to assign persistent, **sequential join IDs** (Ordinal Ranks) to every player on your server!
+<div align="center">
+  <h3>Ordinal</h3>
+  <p>The lightweight seniority and join order tracking solution for Paper servers</p>
+</div>
 
-This plugin is ideal for servers wanting to have a **seniority system** to recognize long-time members, display distinct ranks in chat, or simply maintain an organized player database.
+***
+
+**Ordinal** is a lightweight **utility plugin** designed to assign persistent, **sequential join IDs** (Ordinal Ranks) to every player on your server.
+
+This plugin is ideal for servers wanting to implement a **seniority system** to recognize long-time members, display distinct ranks in chat, or simply maintain an organized player database.
 
 ### Features
 
-**Ordinal** provides a modern approach to **seniority tracking** with these core capabilities:
-* **Sequential Seniority Ranks:** Assigns unique IDs (e.g., `#1`, `#67`) based on strict join order.
-* **Smart Migration:** automatically calculates and backfills **seniority** for existing players based on historical join dates.
-* **Native PlaceholderAPI support** to display **seniority ranks** in chat, tablists, and scoreboards using `%ordinal_rank%`.
-* **Fully configurable messages** using [MiniMessage](https://docs.papermc.io/adventure/minimessage/format) formatting.
+Ordinal handles seniority tracking with a focus on these core functions:
 
-### Documentation
+* It assigns unique **sequential IDs** (e.g., `#1`, `#67`) based on strict join order.
+* It includes a **smart migration** system that automatically calculates and backfills seniority for existing players based on historical join dates.
+* It features native **PlaceholderAPI** support to display seniority ranks using `%ordinal_rank%`.
+* It supports fully configurable messages using [MiniMessage](https://docs.papermc.io/adventure/minimessage/format) formatting.
 
-For a complete guide on features, commands, permissions, and configuration, please visit our [Wiki](https://docs.maboroshi.org/).
+### Prerequisites
 
-### Support
+To use this plugin, your server must be running **Paper**, **Purpur**, or **Folia** on `1.21` or higher. It requires **Java 21**.
 
-If you have questions, want to report a bug, or need help, please join our [Discord server](https://discord.maboroshi.org). Alternatively, you may open an issue on [GitHub](https://github.com/MaboroshiKobo/Ordinal/issues).
+#### Dependencies
+
+* [PlaceholderAPI](https://placeholderapi.com/)
+
+### Documentation & Support
+
+For a complete guide on features, commands, and configuration, please visit our [Wiki](https://docs.maboroshi.org/). If you have questions or need to report a bug, join our [Discord server](https://discord.maboroshi.org) or open an issue on [GitHub](https://github.com/MaboroshiKobo/Ordinal/issues).
 
 ### Statistics
 
@@ -26,8 +38,8 @@ This plugin utilizes [bStats](https://bstats.org/plugin/bukkit/Ordinal/28615) to
 
 ## Building
 
+If you wish to build the project from source, ensure you have a Java 21 environment configured.
+
 ```bash
 ./gradlew build
 ```
-
-The compiled JAR will be in `build/libs/`.
