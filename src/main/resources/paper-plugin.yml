@@ -6,6 +6,7 @@ description: Assign persistent, sequential join ranks to players and recognize y
 author: Maboroshi
 website: https://github.com/MaboroshiKobo/Ordinal
 api-version: "1.21"
+folia-supported: true
 dependencies:
   server:
     PlaceholderAPI:
