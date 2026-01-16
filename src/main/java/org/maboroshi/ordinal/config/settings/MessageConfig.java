@@ -32,7 +32,7 @@ public final class MessageConfig {
 
         @Comment("Message displayed when a new version of the plugin is available.")
         public String updateAvailable =
-                "<prefix> A new version is available! <gray>(Current: <red>{current_version}</red> | Latest: <green>{latest_version}</green>)</gray>";
+                "<prefix> A new version is available! <gray>(Current: <red><current_version></red> | Latest: <green><latest_version></green>)</gray>";
 
         @Comment("Message shown when using /ordinal command without arguments.")
         public String helpInfo =

@@ -32,8 +32,8 @@ public class OrdinalCommand {
 
                     messageUtils.send(
                             sender,
-                            "<prefix>Plugin version: <green><version></green>",
-                            messageUtils.tag("version", plugin.getPluginMeta().getVersion()));
+                            "<prefix>Plugin version: <green><current_version></green>",
+                            messageUtils.tag("current_version", plugin.getPluginMeta().getVersion()));
 
                     messageUtils.send(sender, config.getMessageConfig().messages.helpInfo);
                     return Command.SINGLE_SUCCESS;

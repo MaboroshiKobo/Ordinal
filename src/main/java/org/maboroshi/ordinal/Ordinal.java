@@ -13,7 +13,6 @@ import org.maboroshi.ordinal.util.MessageUtils;
 import org.maboroshi.ordinal.util.UpdateChecker;
 
 public final class Ordinal extends JavaPlugin {
-    private static Ordinal plugin;
     private Logger log;
     private ConfigManager configManager;
     private MessageUtils messageUtils;
@@ -21,7 +20,6 @@ public final class Ordinal extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        plugin = this;
         this.log = new Logger(this);
         if (!reload()) {
             log.error("Disabling plugin due to critical configuration error.");
@@ -29,21 +27,17 @@ public final class Ordinal extends JavaPlugin {
             return;
         }
         this.ordinalManager = new OrdinalManager(this);
-
         getServer().getPluginManager().registerEvents(new JoinListener(this), this);
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new OrdinalExpansion(this).register();
-            getLogger().info("PlaceholderAPI hook enabled.");
+            log.info("PlaceholderAPI hook enabled.");
         }
-
         @SuppressWarnings("unused")
         Metrics metrics = new Metrics(this, 28615);
-
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             OrdinalCommand ordinalCommand = new OrdinalCommand(this);
             event.registrar().register(ordinalCommand.createCommand("ordinal"), "Main command");
         });
-
         new UpdateChecker(this).checkForUpdates();
     }
 

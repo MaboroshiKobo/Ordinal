@@ -15,7 +15,6 @@ import org.maboroshi.ordinal.config.ConfigManager;
 import org.maboroshi.ordinal.util.Logger;
 
 public class OrdinalManager {
-    private final Ordinal plugin;
     private final ConfigManager config;
     private final Logger log;
     private final NamespacedKey ordinal_rank;
@@ -23,7 +22,6 @@ public class OrdinalManager {
     private final HashMap<String, Integer> legacyNameCache = new HashMap<>();
 
     public OrdinalManager(Ordinal plugin) {
-        this.plugin = plugin;
         this.config = plugin.getConfigManager();
         this.log = plugin.getPluginLogger();
         this.ordinal_rank = new NamespacedKey(plugin, "ordinal_rank");
