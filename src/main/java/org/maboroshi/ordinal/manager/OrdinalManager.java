@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
@@ -15,13 +16,15 @@ import org.maboroshi.ordinal.config.ConfigManager;
 import org.maboroshi.ordinal.util.Logger;
 
 public class OrdinalManager {
+    private final Ordinal plugin;
     private final ConfigManager config;
     private final Logger log;
     private final NamespacedKey ordinal_rank;
-    private final HashMap<UUID, Integer> legacyCache = new HashMap<>();
-    private final HashMap<String, Integer> legacyNameCache = new HashMap<>();
+    private final ConcurrentHashMap<UUID, Integer> legacyCache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Integer> legacyNameCache = new ConcurrentHashMap<>();
 
     public OrdinalManager(Ordinal plugin) {
+        this.plugin = plugin;
         this.config = plugin.getConfigManager();
         this.log = plugin.getPluginLogger();
         this.ordinal_rank = new NamespacedKey(plugin, "ordinal_rank");
@@ -55,30 +58,42 @@ public class OrdinalManager {
 
     private void loadExistingPlayers() {
         log.debug("Calculating join order for existing players...");
-        long start = System.currentTimeMillis();
+        Bukkit.getAsyncScheduler().runNow(plugin, (task) -> {
+            long start = System.currentTimeMillis();
 
-        List<OfflinePlayer> allPlayers = Arrays.asList(Bukkit.getOfflinePlayers());
-        log.debug("Found " + allPlayers.size() + " offline players to process");
+            List<OfflinePlayer> allPlayers = Arrays.asList(Bukkit.getOfflinePlayers());
+            log.debug("Found " + allPlayers.size() + " offline players to process");
 
-        allPlayers.sort(Comparator.comparingLong(OfflinePlayer::getFirstPlayed));
+            allPlayers.sort(Comparator.comparingLong(OfflinePlayer::getFirstPlayed));
 
-        int index = 1;
-        for (OfflinePlayer p : allPlayers) {
-            legacyCache.put(p.getUniqueId(), index++);
-            if (p.getName() != null) {
-                legacyNameCache.put(p.getName().toLowerCase(), index - 1);
+            HashMap<UUID, Integer> tempLegacyCache = new HashMap<>();
+            HashMap<String, Integer> tempLegacyNameCache = new HashMap<>();
+
+            int index = 1;
+            for (OfflinePlayer p : allPlayers) {
+                tempLegacyCache.put(p.getUniqueId(), index++);
+                if (p.getName() != null) {
+                    tempLegacyNameCache.put(p.getName().toLowerCase(), index - 1);
+                }
             }
-        }
 
-        if (config.ordinalData.nextOrdinal < index) {
-            log.debug("Updating nextOrdinal from " + config.ordinalData.nextOrdinal + " to " + index);
-            config.updateNextOrdinal(index);
-        } else {
-            log.debug("nextOrdinal already at " + config.ordinalData.nextOrdinal + ", no update needed");
-        }
+            final int finalNextOrdinal = index;
+            final long time = System.currentTimeMillis() - start;
 
-        long time = System.currentTimeMillis() - start;
-        log.debug("Calculation complete. Loaded " + (index - 1) + " players in " + time + "ms.");
+            Bukkit.getGlobalRegionScheduler().run(plugin, (scheduledTask) -> {
+                legacyCache.putAll(tempLegacyCache);
+                legacyNameCache.putAll(tempLegacyNameCache);
+                if (config.ordinalData.nextOrdinal < finalNextOrdinal) {
+                    log.debug(
+                            "Updating nextOrdinal from " + config.ordinalData.nextOrdinal + " to " + finalNextOrdinal);
+                    config.updateNextOrdinal(finalNextOrdinal);
+                } else {
+                    log.debug("nextOrdinal already at " + config.ordinalData.nextOrdinal + ", no update needed");
+                }
+
+                log.debug("Calculation complete. Loaded " + (finalNextOrdinal - 1) + " players in " + time + "ms.");
+            });
+        });
     }
 
     public int checkExistingOrdinal(Player player) {
