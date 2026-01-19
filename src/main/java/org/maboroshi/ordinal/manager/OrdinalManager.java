@@ -34,7 +34,6 @@ public class OrdinalManager {
             return -1;
         }
         int ordinal = player.getPersistentDataContainer().get(ordinal_rank, PersistentDataType.INTEGER);
-        log.debug("Retrieved ordinal #" + ordinal + " for player " + player.getName());
         return ordinal;
     }
 
