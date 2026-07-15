@@ -61,7 +61,7 @@ spotless {
 
   java {
     target 'src/*/java/**/*.java'
-    palantirJavaFormat('2.83.0')
+    palantirJavaFormat('2.94.0')
     formatAnnotations()
     importOrder()
     removeUnusedImports()
