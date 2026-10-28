@@ -12,7 +12,7 @@ public class Loader implements PluginLoader {
     public void classloader(PluginClasspathBuilder classpathBuilder) {
         MavenLibraryResolver resolver = new MavenLibraryResolver();
 
-        resolver.addDependency(new Dependency(new DefaultArtifact("de.exlll:configlib-paper:4.8.0"), null));
+        resolver.addDependency(new Dependency(new DefaultArtifact("de.exlll:configlib-paper:4.8.1"), null));
 
         resolver.addRepository(
                 new RemoteRepository.Builder("paper", "default", "https://repo.papermc.io/repository/maven-public/")
